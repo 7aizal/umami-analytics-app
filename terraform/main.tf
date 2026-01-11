@@ -33,10 +33,3 @@ module "eks" {
   tags = var.tags
 }
 
-module "ecr" {
-  source = "./modules/ecr"
-
-  name            = var.ecr_repository_name
-  max_image_count = 30
-  tags            = var.tags
-}

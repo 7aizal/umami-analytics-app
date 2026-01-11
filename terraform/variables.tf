@@ -84,7 +84,3 @@ variable "node_max_size" {
   description = "Maximum number of worker nodes"
 }
 
-variable "ecr_repository_name" {
-  type        = string
-  description = "ECR repository name"
-}
