@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: terraform/modules/bootstrap
+        working-directory: terraform/bootstrap
 
     steps:
       - name: Checkout repo
