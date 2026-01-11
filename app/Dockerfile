@@ -24,6 +24,13 @@ ARG BASE_PATH
 ENV BASE_PATH=$BASE_PATH
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Prisma needs DATABASE_URL at build time for `prisma generate`.
+# This is a dummy value and is NOT copied into the runtime image.
+ARG DATABASE_URL="postgresql://user:pass@localhost:5432/dummy"
+ENV DATABASE_URL=$DATABASE_URL
+
+
+
 # Don't bake DB creds into the image (K8s will provide DATABASE_URL via Secret)
 RUN pnpm run build-docker
 
