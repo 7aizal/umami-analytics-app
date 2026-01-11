@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: terraform/bootstrap
+        working-directory: terraform/modules/bootstrap
 
     steps:
       - name: Checkout repo
@@ -44,4 +44,3 @@ jobs:
 
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
-        
