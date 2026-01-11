@@ -2,6 +2,16 @@ name: Build and Push Umami Image
 
 on:
   workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Optional image tag override (defaults to sha-<commit>)"
+        required: false
+        type: string
+      push_latest:
+        description: "Also push :latest"
+        required: false
+        default: false
+        type: boolean
   push:
     branches: ["main", "develop"]
     paths:
@@ -14,6 +24,10 @@ permissions:
 env:
   AWS_REGION: eu-west-2
   ECR_REPOSITORY: umami
+
+concurrency:
+  group: build-push-umami-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -33,12 +47,22 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Set image tag + uri
+        run: |
+          if [ -n "${{ inputs.image_tag }}" ]; then
+            IMAGE_TAG="${{ inputs.image_tag }}"
+          else
+            IMAGE_TAG="sha-${GITHUB_SHA}"
+          fi
+
+          IMAGE_URI="${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${IMAGE_TAG}"
+          echo "IMAGE_TAG=${IMAGE_TAG}" >> "$GITHUB_ENV"
+          echo "IMAGE_URI=${IMAGE_URI}" >> "$GITHUB_ENV"
+          echo "IMAGE_URI=${IMAGE_URI}"
+
       - name: Build image
         run: |
-          IMAGE_TAG=sha-${GITHUB_SHA}
-          IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${IMAGE_TAG}
           docker build -t "${IMAGE_URI}" -f app/Dockerfile app
-          echo "IMAGE_URI=${IMAGE_URI}" >> $GITHUB_ENV
 
       - name: Trivy scan (non-blocking)
         uses: aquasecurity/trivy-action@0.24.0
@@ -52,4 +76,11 @@ jobs:
 
       - name: Push image
         run: |
-          docker push "${{ env.IMAGE_URI }}"
+          docker push "${IMAGE_URI}"
+
+      - name: Push latest (optional)
+        if: ${{ inputs.push_latest == true }}
+        run: |
+          LATEST_URI="${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest"
+          docker tag "${IMAGE_URI}" "${LATEST_URI}"
+          docker push "${LATEST_URI}"
