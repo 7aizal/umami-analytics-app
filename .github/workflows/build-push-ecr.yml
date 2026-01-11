@@ -2,7 +2,7 @@ name: Build and Push Umami Image
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main","develop"]
     paths:
       - "app/**"
       - ".github/workflows/build-push-ecr.yml"
