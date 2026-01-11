@@ -1,11 +1,12 @@
 name: Build and Push Umami Image
 
 on:
+  workflow_dispatch:
   push:
-    branches: ["main", "develop"]
-    paths:
-      - "app/**"
-      - ".github/workflows/build-push-ecr.yml"
+      branches: ["main", "develop"]
+      paths:
+        - "app/**"
+        - ".github/workflows/build-push-ecr.yml"
 
 permissions:
   contents: read
