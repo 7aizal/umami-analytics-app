@@ -36,6 +36,10 @@ jobs:
       - name: Terraform Init
         run: terraform init -reconfigure
 
+      - name: Import existing ECR repo if it already exists
+        run: |
+          terraform import -input=false module.ecr.aws_ecr_repository.this umami || true
+
       - name: Terraform Validate
         run: terraform validate
 
