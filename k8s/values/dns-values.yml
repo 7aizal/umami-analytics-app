@@ -1,0 +1,24 @@
+provider: cloudflare
+
+policy: sync
+registry: txt
+txtOwnerId: umami-eks
+txtPrefix: "external-dns-"
+
+domainFilters:
+  - fazops.com
+
+# Only manage records for ingresses
+sources:
+  - ingress
+
+# good defaults
+interval: 1m
+logLevel: info
+
+env:
+  - name: CF_API_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: cloudflare-api-token
+        key: apiToken

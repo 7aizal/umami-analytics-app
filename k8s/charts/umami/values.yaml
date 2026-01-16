@@ -1,0 +1,19 @@
+replicaCount: 1
+
+image:
+  repository: 598130604507.dkr.ecr.eu-west-2.amazonaws.com/umami
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+service:
+  port: 3000
+
+ingress:
+  enabled: true
+  className: nginx
+  host: umami.fazops.com
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: umami.fazops.com
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+
+resources: {}
